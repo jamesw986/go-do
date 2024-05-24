@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"reflect"
-	"strconv"
 )
 
 func sendJSONResponse[T any](w http.ResponseWriter, body T, statusCode int) {
@@ -24,25 +22,6 @@ func parseJSON[T any](w http.ResponseWriter, req *http.Request) T {
 	return parsedBody
 }
 
-func updateTask(originalTask *Task, patch *Task) {
-	originalTaskValues := reflect.ValueOf(originalTask).Elem()
-	patchValues := reflect.ValueOf(patch).Elem()
-
-	for i := 0; i < originalTaskValues.NumField(); i++ {
-		originalTaskField := originalTaskValues.Field(i)
-		patchField := patchValues.Field(i)
-
-		if !patchField.IsZero() {
-			originalTaskField.Set(patchField)
-		}
-	}
-}
-
 func getId(req *http.Request, pathToId string) string {
 	return req.URL.Path[len(pathToId):]
-}
-
-func idsMatch(taskId int, requestId string) bool {
-	parsedId, _ := strconv.Atoi(requestId)
-	return taskId == parsedId
 }
